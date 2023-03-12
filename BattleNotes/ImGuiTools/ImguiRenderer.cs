@@ -188,9 +188,7 @@ namespace BattleNotes.ImGuiTools
             ///////////////////////////////////////////
 
             //ImGui.GetIO().Fonts.AddFontDefault();
-            ImGui.GetIO().Fonts.AddFontFromFileTTF(
-                String.Format(".{0}data{0}fonts{0}JetBrainsMono-Medium.ttf", Path.DirectorySeparatorChar), 
-                20);
+            ImGui.GetIO().Fonts.AddFontFromFileTTF(Consts.startupFontLocation, Consts.defaultFontSize);
         }
 
         /// <summary>

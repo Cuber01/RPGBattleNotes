@@ -14,6 +14,8 @@ namespace BattleNotes
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private ImGuiRenderer guiRenderer;
+        private StyleManager styleManager;
+        private FontLoader fontLoader;
 
         public Game1()
         {
@@ -33,6 +35,11 @@ namespace BattleNotes
 
             guiRenderer = new ImGuiRenderer(this);
             guiRenderer.RebuildFontAtlas();
+            
+            styleManager = new StyleManager(Consts.themeLocation, ImGui.GetStyle());
+            fontLoader = new FontLoader(Consts.fontsLocation, ImGui.GetIO());
+
+            windows.Add(new ThemeSettings(styleManager));
 
         }
 
