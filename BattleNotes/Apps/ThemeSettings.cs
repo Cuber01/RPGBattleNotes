@@ -1,9 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
+using BattleNotes.HandlingData;
 using ImGuiNET;
 
-namespace BattleNotes
+namespace BattleNotes.Apps
 {
 
     public class ThemeSettings : GuiApp

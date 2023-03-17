@@ -1,4 +1,4 @@
-namespace BattleNotes
+namespace BattleNotes.Apps
 {
     public class GuiApp
     {

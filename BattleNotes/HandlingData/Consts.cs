@@ -1,8 +1,7 @@
 using System;
 using System.IO;
-using System.Numerics;
 
-namespace BattleNotes
+namespace BattleNotes.HandlingData
 {
     public static class Consts
     {

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using BattleNotes.Apps;
+using BattleNotes.HandlingData;
 using BattleNotes.ImGuiTools;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
@@ -39,6 +41,8 @@ namespace BattleNotes
             
             styleManager = new StyleManager(Consts.themeLocation, ImGui.GetStyle());
             fontLoader = new FontLoader(Consts.fontsLocation, ImGui.GetIO());
+            
+            windows.Add(new EnemyBoard());
 
         }
 

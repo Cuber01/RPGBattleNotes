@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
   
 */
 
-namespace BattleNotes
+namespace BattleNotes.HandlingData
 {
     public static class AwesomeIcons
     {
