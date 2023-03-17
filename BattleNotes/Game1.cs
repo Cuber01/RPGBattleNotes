@@ -37,7 +37,7 @@ namespace BattleNotes
             graphics.ApplyChanges();
 
             guiRenderer = new ImGuiRenderer(this);
-            styleManager = new StyleManager(Consts.themeLocation, ImGui.GetStyle());
+            styleManager = new StyleManager(Consts.themesLocation, ImGui.GetStyle());
             fontLoader = new FontLoader(Consts.fontsLocation, ImGui.GetIO());
             
             guiRenderer.RebuildFontAtlas();

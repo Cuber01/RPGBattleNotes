@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using BattleNotes.GeneralTools;
+using BattleNotes.HandlingData.Json;
 using ImGuiNET;
 using Newtonsoft.Json;
 

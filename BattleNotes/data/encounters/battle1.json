@@ -1,16 +1,16 @@
 {
-    "name": "Battle of Rocroi",
+    "name": "Battle of Breitenfelden",
   
     "characters": {
-      "\uf12a Baron": {
+      "\uf12a Szlachcic": {
         "hp": 100,
         "shield": 20
       },
-      "Kowboj": {
+      "Armata": {
         "hp": 20,
         "shield": 80
       },
-      "Rewolwerowiec": {
+      "Wojak": {
         "hp": 6,
         "shield": 666
       },

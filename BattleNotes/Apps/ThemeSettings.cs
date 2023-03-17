@@ -7,7 +7,7 @@ namespace BattleNotes.Apps
 
     public class ThemeSettings : GuiApp
     {
-        private readonly string[] themeFiles = Directory.GetFiles(Consts.themeLocation);
+        private readonly string[] themeFiles = Directory.GetFiles(Consts.themesLocation);
         private readonly string[] fontFiles = Directory.GetFiles(Consts.fontsLocation);
 
         private readonly StyleManager styleManager;

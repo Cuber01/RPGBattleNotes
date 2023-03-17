@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Authentication.ExtendedProtection;
+using BattleNotes.GeneralTools;
 using BattleNotes.HandlingData;
+using BattleNotes.HandlingData.Json;
 using ImGuiNET;
+using Newtonsoft.Json;
 
 namespace BattleNotes.Apps
 {
@@ -12,20 +15,40 @@ namespace BattleNotes.Apps
     {
         private class Enemy
         {
-            public string name = "";
-            public int hp = 0;
-            public int shield = 0;
-            public int maxShield = 0;
+            public Enemy(string name, int hp, int maxShield)
+            {
+                this.name = name;
+                this.hp = hp;
+                this.shield = maxShield;
+                this.maxShield = maxShield;
+            }
+            
+            public string name;
+            public int hp;
+            public int shield;
+            public int maxShield;
         }
         
         private List<Enemy> enemies = new List<Enemy>();
-        
+        private List<Encounter> encounters = new List<Encounter>();
+
         private const ImGuiTableFlags tableFlags = ImGuiTableFlags.BordersV | ImGuiTableFlags.BordersH | ImGuiTableFlags.NoBordersInBody | 
                                                    ImGuiTableFlags.RowBg | ImGuiTableFlags.Reorderable;
         private const ImGuiInputTextFlags inputTextFlags = ImGuiInputTextFlags.EnterReturnsTrue;
-
         
         private const int colCount = 8;
+
+        public EnemyBoard()
+        {
+            string[] encounterFiles = Directory.GetFiles(Consts.encountersLocation);
+
+            foreach (var file in encounterFiles)
+            {
+                if(Path.GetExtension(file) != ".json") continue;
+                
+                encounters.Add(JsonConvert.DeserializeObject<Encounter>(FileReader.getFileString(file)));
+            }
+        }
 
         private string assembleID(int row, int col) => (enemies[row].name + row + '#' + col);
 
@@ -37,7 +60,25 @@ namespace BattleNotes.Apps
 
             if (ImGui.Button("Add character"))
             {
-                enemies.Add(new Enemy());
+                enemies.Add(new Enemy("", 0, 0));
+            }
+            
+            if (ImGui.BeginCombo("Load battle", encounters[0].name))
+            {
+                for (int n = 0; n < encounters.Count; n++)
+                {
+                    if (ImGui.Selectable(encounters[n].name, true))
+                    {
+                        enemies.Clear();
+                        
+                        foreach (var enemy in encounters[n].characters)
+                        {
+                            enemies.Add(new Enemy(enemy.Key, enemy.Value["hp"], enemy.Value["shield"])); 
+                        }
+                    }
+                }
+
+                ImGui.EndCombo();
             }
             
             if (ImGui.BeginTable("#main", colCount, tableFlags))

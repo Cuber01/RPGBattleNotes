@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using ImGuiNET;
 
-namespace BattleNotes.HandlingData
+namespace BattleNotes.HandlingData.Json
 { 
     public class Theme
     {
