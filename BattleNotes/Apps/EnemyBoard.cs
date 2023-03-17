@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Authentication.ExtendedProtection;
 using BattleNotes.HandlingData;
 using ImGuiNET;
 
@@ -9,7 +10,7 @@ namespace BattleNotes.Apps
 
     public class EnemyBoard : GuiApp
     {
-        private struct Enemy
+        private class Enemy
         {
             public Enemy(string name, int hp, int shield)
             {
@@ -17,7 +18,7 @@ namespace BattleNotes.Apps
                 this.hp = hp;
                 this.shield = shield;
             }
-        
+
             public string name;
             public int hp;
             public int shield;
@@ -27,14 +28,14 @@ namespace BattleNotes.Apps
         
         private const ImGuiTableFlags tableFlags = ImGuiTableFlags.BordersV | ImGuiTableFlags.BordersH | ImGuiTableFlags.NoBordersInBody |
                                                    ImGuiTableFlags.Sortable | ImGuiTableFlags.RowBg;
-        private const int colCount = 6;
-        private int hpToRemove = 0;
-        private int shieldToRemove = 0;
+        private const ImGuiInputTextFlags inputFlags = ImGuiInputTextFlags.EnterReturnsTrue;
         
+        private const int colCount = 6;
+
         public EnemyBoard()
         {
             enemies.Add(new Enemy("Baddie", 10, 10));
-            enemies.Add(new Enemy("Baddie", 10, 10));
+            enemies.Add(new Enemy("Normie", 10, 10));
         }
 
         public override void imGuiUpdate()
@@ -85,11 +86,46 @@ namespace BattleNotes.Apps
 
                     switch (col)
                     {
-                        case 0: ImGui.Text(enemies[row].name);                  break;
+                        case 0:
+                        {
+                            ImGui.PushID(enemies[row].name + row);
+                            
+                            string inputText = enemies[row].name;
+                            if(ImGui.InputText("", ref inputText, byte.MaxValue, inputFlags))
+                            {
+                                enemies[row].name = inputText;
+                            }
+                            
+                            ImGui.PopID();
+                            
+                            break;
+                        }
                         case 1: ImGui.Text(enemies[row].hp.ToString());      break;
                         case 2: ImGui.Text(enemies[row].shield.ToString());  break;
-                        case 3: ImGui.InputInt("", ref hpToRemove); break;
-                        case 4: ImGui.InputInt("", ref shieldToRemove); break;
+                        case 3:
+                        {
+                            ImGui.PushID(enemies[row].name + col);
+                            
+                            int hpToRemove = 0;
+                            ImGui.InputInt("", ref hpToRemove);
+                            enemies[row].hp -= hpToRemove;
+                            
+                            ImGui.PopID();
+                            
+                            break;
+                        }
+                        case 4:               
+                        {
+                            ImGui.PushID(enemies[row].name + col);
+                            
+                            int shieldToRemove = 0;
+                            ImGui.InputInt("", ref shieldToRemove);
+                            enemies[row].hp -= shieldToRemove;
+                            
+                            ImGui.PopID();
+                            
+                            break;
+                        }
                         case 5: ImGui.Button(AwesomeIcons.Times); break;
                     }
 
