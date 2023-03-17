@@ -30,7 +30,8 @@ namespace BattleNotes
             IsMouseVisible = true;
             
             graphics.PreferredBackBufferHeight = 1000;
-            graphics.PreferredBackBufferWidth = 1000;
+            graphics.PreferredBackBufferWidth = 1200;
+            Window.AllowUserResizing = true;
             graphics.ApplyChanges();
 
             guiRenderer = new ImGuiRenderer(this);
@@ -38,8 +39,6 @@ namespace BattleNotes
             
             styleManager = new StyleManager(Consts.themeLocation, ImGui.GetStyle());
             fontLoader = new FontLoader(Consts.fontsLocation, ImGui.GetIO());
-
-            windows.Add(new ThemeSettings(styleManager));
 
         }
 
@@ -61,7 +60,7 @@ namespace BattleNotes
                 
                 windows[i].update();
             }
-            
+
         }
 
         protected override void Draw(GameTime gameTime)
@@ -73,6 +72,7 @@ namespace BattleNotes
             foreach (var window in windows)
             {
                 window.imGuiUpdate();
+                ImGui.ShowDemoWindow();
             }
             
             guiRenderer.AfterLayout();
