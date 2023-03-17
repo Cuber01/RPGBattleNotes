@@ -25,7 +25,8 @@ namespace BattleNotes.Apps
         
         private List<Enemy> enemies = new List<Enemy>();
         
-        private const ImGuiTableFlags tableFlags = ImGuiTableFlags.BordersOuter | ImGuiTableFlags.Resizable | ImGuiTableFlags.Sortable;
+        private const ImGuiTableFlags tableFlags = ImGuiTableFlags.BordersV | ImGuiTableFlags.BordersH | ImGuiTableFlags.NoBordersInBody |
+                                                   ImGuiTableFlags.Sortable | ImGuiTableFlags.RowBg;
         private const int colCount = 6;
         private int hpToRemove = 0;
         private int shieldToRemove = 0;
@@ -55,8 +56,8 @@ namespace BattleNotes.Apps
 
         private void showEnemies()
         {
-            ImGui.TableNextRow();
-
+            // Headers
+            ImGui.TableHeadersRow();
             for (int col = 0; col < colCount; col++)
             {
                 ImGui.TableSetColumnIndex(col);
@@ -68,15 +69,16 @@ namespace BattleNotes.Apps
                     case 2: ImGui.Text(AwesomeIcons.Shield);  break;
                     case 3: ImGui.Text("Subtract " + AwesomeIcons.Heart); break;
                     case 4: ImGui.Text("Subtract " + AwesomeIcons.Shield); break;
-                    case 5: ImGui.Button("Kill"); break;
+                    case 5: ImGui.Text("Kill"); break;
                 }
 
             }
             
-            ImGui.TableNextRow();
-
+            // Content
             for (int row = 0; row < enemies.Count; row++)
             {
+                ImGui.TableNextRow();
+                
                 for (int col = 0; col < colCount; col++)
                 {
                     ImGui.TableSetColumnIndex(col);
@@ -88,12 +90,10 @@ namespace BattleNotes.Apps
                         case 2: ImGui.Text(enemies[row].shield.ToString());  break;
                         case 3: ImGui.InputInt("", ref hpToRemove); break;
                         case 4: ImGui.InputInt("", ref shieldToRemove); break;
-                        case 5: ImGui.Button(AwesomeIcons.Crosshairs); break;
+                        case 5: ImGui.Button(AwesomeIcons.Times); break;
                     }
 
                 }
-                
-                ImGui.TableNextRow();
             }
 
         }
