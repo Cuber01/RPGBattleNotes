@@ -1,0 +1,25 @@
+{
+  "Characters": 
+  {
+    "\uf12a Baron": {
+      "hp": 100,
+      "shield": 20
+    },
+    "Kowboj": {
+      "hp": 20,
+      "shield": 80
+    },
+    "Rewolwerowiec": {
+      "hp": 6,
+      "shield": 666
+    },
+    "Pion1": {
+      "hp": 20,
+      "shield": 20
+    },
+    "Pion2": {
+      "hp": 20,
+      "shield": 20
+    }
+  }
+}
