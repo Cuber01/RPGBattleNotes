@@ -37,6 +37,7 @@ namespace BattleNotes.Apps
         private const ImGuiInputTextFlags inputTextFlags = ImGuiInputTextFlags.EnterReturnsTrue;
         
         private const int colCount = 8;
+        private int currentEncounter = 0;
 
         public EnemyBoard()
         {
@@ -63,18 +64,26 @@ namespace BattleNotes.Apps
                 enemies.Add(new Enemy("", 0, 0));
             }
             
-            if (ImGui.BeginCombo("Load battle", encounters[0].name))
+            if (ImGui.BeginCombo("Load battle", encounters[currentEncounter].name))
             {
                 for (int n = 0; n < encounters.Count; n++)
                 {
-                    if (ImGui.Selectable(encounters[n].name, true))
+                    bool is_selected = (currentEncounter == n);
+                    if (ImGui.Selectable(encounters[n].name, is_selected))
                     {
                         enemies.Clear();
                         
                         foreach (var enemy in encounters[n].characters)
                         {
-                            enemies.Add(new Enemy(enemy.Key, enemy.Value["hp"], enemy.Value["shield"])); 
+                            enemies.Add(new Enemy(enemy.Key, enemy.Value["hp"], enemy.Value["shield"]));
+                            currentEncounter = n;
                         }
+                    }
+
+                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected)
+                    {
+                        ImGui.SetItemDefaultFocus();
                     }
                 }
 
