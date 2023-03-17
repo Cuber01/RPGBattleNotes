@@ -37,10 +37,12 @@ namespace BattleNotes
             graphics.ApplyChanges();
 
             guiRenderer = new ImGuiRenderer(this);
-            guiRenderer.RebuildFontAtlas();
-            
             styleManager = new StyleManager(Consts.themeLocation, ImGui.GetStyle());
             fontLoader = new FontLoader(Consts.fontsLocation, ImGui.GetIO());
+            
+            guiRenderer.RebuildFontAtlas();
+            
+            
             
             windows.Add(new EnemyBoard());
 
