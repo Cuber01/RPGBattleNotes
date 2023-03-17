@@ -26,12 +26,15 @@ namespace BattleNotes.Apps
         
         private List<Enemy> enemies = new List<Enemy>();
         
-        private const ImGuiTableFlags tableFlags = ImGuiTableFlags.BordersV | ImGuiTableFlags.BordersH | ImGuiTableFlags.NoBordersInBody |
-                                                   ImGuiTableFlags.Sortable | ImGuiTableFlags.RowBg;
-        private const ImGuiInputTextFlags inputFlags = ImGuiInputTextFlags.EnterReturnsTrue;
+        private const ImGuiTableFlags tableFlags = ImGuiTableFlags.BordersV | ImGuiTableFlags.BordersH | ImGuiTableFlags.NoBordersInBody | 
+                                                   ImGuiTableFlags.RowBg | ImGuiTableFlags.Reorderable;
+        private const ImGuiInputTextFlags inputTextFlags = ImGuiInputTextFlags.EnterReturnsTrue;
+
         
         private const int colCount = 6;
 
+        private string assembleID(int row, int col) => (enemies[row].name + row + '#' + col);
+        
         public EnemyBoard()
         {
             enemies.Add(new Enemy("Baddie", 10, 10));
@@ -86,47 +89,101 @@ namespace BattleNotes.Apps
 
                     switch (col)
                     {
+                        // Name
                         case 0:
                         {
-                            ImGui.PushID(enemies[row].name + row);
+                            ImGui.PushID(assembleID(row, col));
                             
                             string inputText = enemies[row].name;
-                            if(ImGui.InputText("", ref inputText, byte.MaxValue, inputFlags))
+                            ImGui.InputText("", ref inputText, byte.MaxValue, inputTextFlags);
+                            
+                            if (ImGui.IsItemDeactivatedAfterEdit())
                             {
                                 enemies[row].name = inputText;
+                            }
+
+                            ImGui.PopID();
+                            
+                            break;
+                        }
+                        // Set HP
+                        case 1:
+                        {
+                            ImGui.PushID(assembleID(row, col));
+                            
+                            int hp = enemies[row].hp;
+                            if(ImGui.InputInt("", ref hp, 0))
+                            {
+                                enemies[row].hp = hp;
                             }
                             
                             ImGui.PopID();
                             
                             break;
                         }
-                        case 1: ImGui.Text(enemies[row].hp.ToString());      break;
-                        case 2: ImGui.Text(enemies[row].shield.ToString());  break;
+                        // Set Shield
+                        case 2:
+                        {
+                            ImGui.PushID(assembleID(row, col));
+                            
+                            int shield = enemies[row].shield;
+                            if(ImGui.InputInt("", ref shield, 0))
+                            {
+                                enemies[row].shield = shield;
+                            }
+                            
+                            ImGui.PopID();
+                            
+                            break;
+                        }
+                        // Subtract HP
                         case 3:
                         {
-                            ImGui.PushID(enemies[row].name + col);
+                            ImGui.PushID(assembleID(row, col));
                             
                             int hpToRemove = 0;
-                            ImGui.InputInt("", ref hpToRemove);
-                            enemies[row].hp -= hpToRemove;
-                            
+                            ImGui.InputInt("", ref hpToRemove, 0);
+
+                            if (ImGui.IsItemDeactivatedAfterEdit())
+                            {
+                                enemies[row].hp -= hpToRemove;
+                            }
+
                             ImGui.PopID();
-                            
+
                             break;
                         }
+                        // Subtract Shield
                         case 4:               
                         {
-                            ImGui.PushID(enemies[row].name + col);
+                            ImGui.PushID(assembleID(row, col));
                             
                             int shieldToRemove = 0;
-                            ImGui.InputInt("", ref shieldToRemove);
-                            enemies[row].hp -= shieldToRemove;
+                            ImGui.InputInt("", ref shieldToRemove, 0);
+                            
+                            if (ImGui.IsItemDeactivatedAfterEdit())
+                            {
+                                enemies[row].shield -= shieldToRemove;
+                            }
                             
                             ImGui.PopID();
                             
                             break;
                         }
-                        case 5: ImGui.Button(AwesomeIcons.Times); break;
+                        // Kill
+                        case 5:
+                        {
+                            ImGui.PushID(assembleID(row, col));
+                            
+                            if (ImGui.Button(AwesomeIcons.Times))
+                            {
+                                enemies.RemoveAt(row);
+                            }
+                                
+                            ImGui.PopID();
+                            
+                            break;
+                        }
                     }
 
                 }
