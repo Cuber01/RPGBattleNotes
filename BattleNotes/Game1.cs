@@ -41,10 +41,9 @@ namespace BattleNotes
             fontLoader = new FontLoader(Consts.fontsLocation, ImGui.GetIO());
             
             guiRenderer.RebuildFontAtlas();
-            
-            
-            
+
             windows.Add(new EnemyBoard());
+            windows.Add(new ThemeSettings(styleManager));
 
         }
 

@@ -12,16 +12,10 @@ namespace BattleNotes.Apps
     {
         private class Enemy
         {
-            public Enemy(string name, int hp, int shield)
-            {
-                this.name = name;
-                this.hp = hp;
-                this.shield = shield;
-            }
-
-            public string name;
-            public int hp;
-            public int shield;
+            public string name = "";
+            public int hp = 0;
+            public int shield = 0;
+            public int maxShield = 0;
         }
         
         private List<Enemy> enemies = new List<Enemy>();
@@ -31,15 +25,9 @@ namespace BattleNotes.Apps
         private const ImGuiInputTextFlags inputTextFlags = ImGuiInputTextFlags.EnterReturnsTrue;
 
         
-        private const int colCount = 6;
+        private const int colCount = 8;
 
         private string assembleID(int row, int col) => (enemies[row].name + row + '#' + col);
-        
-        public EnemyBoard()
-        {
-            enemies.Add(new Enemy("Baddie", 10, 10));
-            enemies.Add(new Enemy("Normie", 10, 10));
-        }
 
         public override void imGuiUpdate()
         {
@@ -47,7 +35,12 @@ namespace BattleNotes.Apps
 
             ImGui.Begin("Enemy Board", ref running);
 
-            if (ImGui.BeginTable("#main", 6, tableFlags))
+            if (ImGui.Button("Add character"))
+            {
+                enemies.Add(new Enemy());
+            }
+            
+            if (ImGui.BeginTable("#main", colCount, tableFlags))
             {
                 showEnemies();
 
@@ -65,15 +58,18 @@ namespace BattleNotes.Apps
             for (int col = 0; col < colCount; col++)
             {
                 ImGui.TableSetColumnIndex(col);
-
+                ImGui.AlignTextToFramePadding();
+                
                 switch (col)
                 {
                     case 0: ImGui.Text("Name");                  break;
                     case 1: ImGui.Text(AwesomeIcons.Heart);      break;
                     case 2: ImGui.Text(AwesomeIcons.Shield);  break;
-                    case 3: ImGui.Text("Subtract " + AwesomeIcons.Heart); break;
-                    case 4: ImGui.Text("Subtract " + AwesomeIcons.Shield); break;
-                    case 5: ImGui.Text("Kill"); break;
+                    case 3: ImGui.Text("Remove " + AwesomeIcons.Heart); break;
+                    case 4: ImGui.Text("Remove " + AwesomeIcons.Shield); break;
+                    case 5: ImGui.Text("Max " + AwesomeIcons.Shield); break;
+                    case 6: ImGui.Text("Regen " + AwesomeIcons.Shield); break;   
+                    case 7: ImGui.Text("Kill"); break;   
                 }
 
             }
@@ -93,6 +89,8 @@ namespace BattleNotes.Apps
                         case 0:
                         {
                             ImGui.PushID(assembleID(row, col));
+
+                            ImGui.PushItemWidth(115);
                             
                             string inputText = enemies[row].name;
                             ImGui.InputText("", ref inputText, byte.MaxValue, inputTextFlags);
@@ -102,6 +100,7 @@ namespace BattleNotes.Apps
                                 enemies[row].name = inputText;
                             }
 
+                            ImGui.PopItemWidth();
                             ImGui.PopID();
                             
                             break;
@@ -136,7 +135,7 @@ namespace BattleNotes.Apps
                             
                             break;
                         }
-                        // Subtract HP
+                        // Remove HP
                         case 3:
                         {
                             ImGui.PushID(assembleID(row, col));
@@ -153,7 +152,7 @@ namespace BattleNotes.Apps
 
                             break;
                         }
-                        // Subtract Shield
+                        // Remove Shield
                         case 4:               
                         {
                             ImGui.PushID(assembleID(row, col));
@@ -170,8 +169,37 @@ namespace BattleNotes.Apps
                             
                             break;
                         }
-                        // Kill
+                        // Set Max Shield
                         case 5:
+                        {
+                            ImGui.PushID(assembleID(row, col));
+                            
+                            int maxShield = enemies[row].maxShield;
+                            if(ImGui.InputInt("", ref maxShield, 0))
+                            {
+                                enemies[row].maxShield = maxShield;
+                            }
+                            
+                            ImGui.PopID();
+                            
+                            break;
+                        }
+                        // Regen shield
+                        case 6:
+                        {
+                            ImGui.PushID(assembleID(row, col));
+                            
+                            if(ImGui.Button(AwesomeIcons.Plus))
+                            {
+                                enemies[row].shield = enemies[row].maxShield;
+                            }
+                            
+                            ImGui.PopID();
+                            
+                            break;
+                        }
+                        // Kill
+                        case 7:
                         {
                             ImGui.PushID(assembleID(row, col));
                             
