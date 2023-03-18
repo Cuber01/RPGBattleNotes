@@ -130,8 +130,22 @@ namespace BattleNotes.Apps
             encounter.name = name;
             encounter.characters = characters;
             
-            encounters.Add(encounter);
+            // Overwrite
+            bool overwritten = false;
+            for (int i = 0; i < encounters.Count; i++)
+            {
+                if (encounters[i].name == name)
+                {
+                    encounters.RemoveAt(i);
+                    encounters.Add(encounter);
+                    overwritten = true;
+                    break;
+                }
+            }
             
+            // Add normally if no such battle exists
+            if(!overwritten) encounters.Add(encounter);
+
             File.WriteAllText(
                 String.Format(Consts.encountersLocation + "{0}" + name + ".json", Path.DirectorySeparatorChar),
                 JsonConvert.SerializeObject(encounter));
