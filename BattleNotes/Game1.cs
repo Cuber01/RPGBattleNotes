@@ -49,9 +49,7 @@ namespace BattleNotes
             // Enable keyboard navigation
             ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
 
-            windows.Add(new EnemyBoard());
-            windows.Add(new ThemeSettings(styleManager));
-
+            windows.Add(new DiceRoller());
         }
 
         protected override void LoadContent()
