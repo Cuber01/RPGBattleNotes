@@ -42,6 +42,9 @@ namespace BattleNotes
             
             guiRenderer.RebuildFontAtlas();
 
+            styleManager.setTheme("steam");
+            styleManager.setTheme("gold");
+            
             windows.Add(new EnemyBoard());
             windows.Add(new ThemeSettings(styleManager));
 

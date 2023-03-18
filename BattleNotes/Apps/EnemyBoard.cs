@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Security.Authentication.ExtendedProtection;
 using BattleNotes.GeneralTools;
 using BattleNotes.HandlingData;
@@ -34,10 +35,14 @@ namespace BattleNotes.Apps
 
         private const ImGuiTableFlags tableFlags = ImGuiTableFlags.BordersV | ImGuiTableFlags.BordersH | ImGuiTableFlags.NoBordersInBody | 
                                                    ImGuiTableFlags.RowBg | ImGuiTableFlags.Reorderable;
+
         private const ImGuiInputTextFlags inputTextFlags = ImGuiInputTextFlags.EnterReturnsTrue;
-        
+
         private const int colCount = 8;
         private int currentEncounter = 0;
+        
+        private string scenarioName = "";
+        private string lastSaveState = "";
 
         public EnemyBoard()
         {
@@ -59,12 +64,82 @@ namespace BattleNotes.Apps
 
             ImGui.Begin("Enemy Board", ref running);
 
+            showLoadBattle();
+            
             if (ImGui.Button("Add character"))
             {
                 enemies.Add(new Enemy("", 0, 0));
             }
+
+            if (ImGui.BeginTable("#main", colCount, tableFlags))
+            {
+                showEnemies();
+
+                ImGui.EndTable();
+            }
+
+            ImGui.Spacing();
+            showSaveBattle();
             
-            if (ImGui.BeginCombo("Load battle", encounters[currentEncounter].name))
+            ImGui.End();
+
+        }
+
+        private void showSaveBattle()
+        {
+        
+            ImGui.Dummy(new Vector2(0.0f, 80.0f));
+
+            ImGui.InputText("", ref scenarioName, byte.MaxValue);
+            
+            ImGui.SameLine();
+            
+            if (ImGui.Button("Save as"))
+            {
+                lastSaveState = handleSave(scenarioName);    
+            }
+            
+            ImGui.SameLine();
+            
+            ImGui.Text(lastSaveState);
+        }
+
+        private string handleSave(string name)
+        {
+            if (name == "") return "(E: No name)";
+            if (name.Contains('/') || name.Contains('\\')) return "(E: Invalid name)";
+
+            save(name);
+            return "(Success!)";
+        }
+
+        private void save(string name)
+        {
+            Dictionary<string, Dictionary<string, int>> characters = new Dictionary<string, Dictionary<string, int>>();
+
+            foreach (var enemy in enemies)
+            {
+                characters.Add(enemy.name, new Dictionary<string, int>
+                {
+                    { "hp", enemy.hp            },
+                    { "shield", enemy.maxShield }
+                });
+            }
+
+            Encounter encounter = new Encounter();
+            encounter.name = name;
+            encounter.characters = characters;
+            
+            encounters.Add(encounter);
+            
+            File.WriteAllText(
+                String.Format(Consts.encountersLocation + "{0}" + name + ".json", Path.DirectorySeparatorChar),
+                JsonConvert.SerializeObject(encounter));
+        }
+
+        private void showLoadBattle()
+        {
+            if (ImGui.BeginCombo("Load battle",  encounters.Count >= 1 ? encounters[currentEncounter].name : null))
             {
                 for (int n = 0; n < encounters.Count; n++)
                 {
@@ -89,16 +164,6 @@ namespace BattleNotes.Apps
 
                 ImGui.EndCombo();
             }
-            
-            if (ImGui.BeginTable("#main", colCount, tableFlags))
-            {
-                showEnemies();
-
-                ImGui.EndTable();
-            }
-
-            ImGui.End();
-
         }
 
         private void showEnemies()
