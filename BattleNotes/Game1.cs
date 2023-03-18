@@ -42,9 +42,13 @@ namespace BattleNotes
             
             guiRenderer.RebuildFontAtlas();
 
+            // This makes for a theme I like
             styleManager.setTheme("steam");
             styleManager.setTheme("gold");
             
+            // Enable keyboard navigation
+            ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
+
             windows.Add(new EnemyBoard());
             windows.Add(new ThemeSettings(styleManager));
 
