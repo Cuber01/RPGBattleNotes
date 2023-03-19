@@ -19,6 +19,8 @@ namespace BattleNotes
         private StyleManager styleManager;
         private FontLoader fontLoader;
 
+        private const string mainPopupID = "#main_popup";
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -48,8 +50,6 @@ namespace BattleNotes
             
             // Enable keyboard navigation
             ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
-
-            windows.Add(new DiceRoller());
         }
 
         protected override void LoadContent()
@@ -59,7 +59,6 @@ namespace BattleNotes
         
         protected override void Update(GameTime gameTime)
         {
-            
             for (int i = 0; i < windows.Count; i++)
             {
                 if (!windows[i].running)
@@ -78,6 +77,11 @@ namespace BattleNotes
             graphics.GraphicsDevice.Clear(Color.Gray);
 
             guiRenderer.BeforeLayout(gameTime);
+
+            ImGui.BeginPopupContextVoid("Hello");
+                updatePopupMenu();
+                drawPopupMenu();
+            ImGui.End();
             
             foreach (var window in windows)
             {
@@ -88,6 +92,30 @@ namespace BattleNotes
             guiRenderer.AfterLayout();
             
             base.Draw(gameTime);
+        }
+
+        private void updatePopupMenu()
+        {
+
+            if (ImGui.BeginPopupContextVoid(mainPopupID))
+            {
+                if (ImGui.Selectable("Enemy Board")) windows.Add(new EnemyBoard());
+                
+                if (ImGui.Selectable("Dice Roller")) windows.Add(new DiceRoller());
+                
+                if (ImGui.Selectable("Theme Settings")) windows.Add(new ThemeSettings(styleManager));
+            
+                ImGui.EndPopup();
+            }
+            
+        }
+
+        private void drawPopupMenu()
+        {
+            if (ImGui.GetIO().MouseClicked[1])
+            {
+                ImGui.OpenPopup(mainPopupID);
+            }
         }
     }
 }
