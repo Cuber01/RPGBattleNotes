@@ -86,7 +86,6 @@ namespace BattleNotes
             foreach (var window in windows)
             {
                 window.imGuiUpdate();
-                ImGui.ShowDemoWindow();
             }
             
             guiRenderer.AfterLayout();

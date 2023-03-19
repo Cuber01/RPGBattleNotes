@@ -18,7 +18,6 @@ namespace BattleNotes.Apps
         }
 
         private int currentTheme = 0;
-        private int currentFont = 0;
 
         public override void imGuiUpdate()
         {
@@ -47,28 +46,30 @@ namespace BattleNotes.Apps
                 ImGui.EndCombo();
             }
 
-            if (ImGui.BeginCombo("Current Font", Path.GetFileNameWithoutExtension(fontFiles[currentFont])))
-            {
-                for (int n = 0; n < fontFiles.Length; n++)
-                {
-                    bool is_selected = (currentFont == n);
-                    if (ImGui.Selectable(Path.GetFileNameWithoutExtension(fontFiles[n]), is_selected))
-                    {
-                        ImFontPtr a = ImGui.GetIO().Fonts.AddFontFromFileTTF(fontFiles[n], Consts.defaultFontSize);
-                        ImGui.PushFont(a);
-                        currentFont = n;
-                        ImGui.PopFont();
-                    }
-
-                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                    if (is_selected)
-                    {
-                        ImGui.SetItemDefaultFocus();
-                    }
-                }
-
-                ImGui.EndCombo();
-            }
+            // FIXME: Functionality removed due to being broken
+            
+            // if (ImGui.BeginCombo("Current Font", Path.GetFileNameWithoutExtension(fontFiles[currentFont])))
+            // {
+            //     for (int n = 0; n < fontFiles.Length; n++)
+            //     {
+            //         bool is_selected = (currentFont == n);
+            //         if (ImGui.Selectable(Path.GetFileNameWithoutExtension(fontFiles[n]), is_selected))
+            //         {
+            //             ImFontPtr a = ImGui.GetIO().Fonts.AddFontFromFileTTF(fontFiles[n], Consts.defaultFontSize);
+            //             ImGui.PushFont(a);
+            //             currentFont = n;
+            //             ImGui.PopFont();
+            //         }
+            //
+            //         // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+            //         if (is_selected)
+            //         {
+            //             ImGui.SetItemDefaultFocus();
+            //         }
+            //     }
+            //
+            //     ImGui.EndCombo();
+            // }
             
             ImGui.End();
 
