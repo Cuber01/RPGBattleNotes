@@ -13,7 +13,7 @@ namespace BattleNotes.Apps
     {
         private class RollData
         {
-            public RollData(int diceNum, int maxDiceRange, int modifier)
+            public RollData(int diceNum = 0, int maxDiceRange = 0, int modifier = 0)
             {
                 this.diceNum = diceNum;
                 this.maxDiceRange = maxDiceRange;
@@ -25,12 +25,16 @@ namespace BattleNotes.Apps
             public int modifier;
 
             public int result = 0;
-            public List<int> components = new List<int>();
+            public readonly List<int> components = new List<int>();
         }
 
         private readonly RollData currentRoll = new RollData(1, 10, 0);
+        private readonly List<RollData> history = new List<RollData>();
+
         private readonly Random rnd = new Random();
 
+        private readonly Vector4 highlightColor = new Vector4(1f, 209/255f, 0f, 1f);
+        
         private readonly Vector2 itemSpacingInMainUI = new Vector2(4, 2);
         private readonly Vector2 dummySize = new Vector2(0, 10);
 
@@ -53,18 +57,18 @@ namespace BattleNotes.Apps
             ImGui.PushItemWidth(100); 
             ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, itemSpacingInMainUI);
             
-                ImGui.PushID(0);
+                ImGui.PushID("#a");
                     ImGui.InputInt("", ref currentRoll.diceNum, 1);
                     ImGui.SameLine();
                 ImGui.PopID();
                 
-                ImGui.PushID(1);
+                ImGui.PushID("#b");
                     ImGui.Text("d");
                     ImGui.SameLine();
                     ImGui.InputInt("", ref currentRoll.maxDiceRange, 1);
                 ImGui.PopID();
                 
-                ImGui.PushID(2);
+                ImGui.PushID("#c");
                     ImGui.SameLine();
                     ImGui.Text("+");
                     ImGui.SameLine();
@@ -88,11 +92,12 @@ namespace BattleNotes.Apps
             ImGui.Dummy(dummySize);
             
             ImGui.Text("Presets:");
-            if (ImGui.Button("d20")) roll(1, 20, 0);
+            if (ImGui.Button("d20")) rollPreset(1, 20, 0);
             ImGui.SameLine();
-            if (ImGui.Button("d10")) roll(1, 10, 0);
+            if (ImGui.Button("d10")) rollPreset(1, 10, 0);
             ImGui.SameLine();
-            if (ImGui.Button("5d6")) roll(5, 6, 0);
+            if (ImGui.Button("5d6")) rollPreset(5, 6, 0);
+            
         }
 
         private void showResult()
@@ -109,7 +114,18 @@ namespace BattleNotes.Apps
             }
             else
             {
-                string resultText = String.Concat(r.diceNum, "d", r.maxDiceRange, ": ", r.result, " (");
+                // How many dice were used + modifier
+                string diceText = String.Concat(r.diceNum, "d", r.maxDiceRange);
+
+                if (r.modifier > 0)
+                {
+                    diceText += (" + " + r.modifier);
+                }
+
+                diceText += ":";
+
+                // Result of roll
+                string resultText = r.result + " (";
 
                 for (int i = 0; i < r.components.Count; i++)
                 {
@@ -124,7 +140,9 @@ namespace BattleNotes.Apps
                     resultText += " + ";
                 }
                 
-                ImGui.Text(resultText);
+                ImGui.Text(diceText);
+                ImGui.SameLine();
+                ImGui.TextColored(highlightColor, resultText);
             }
         }
         
@@ -133,10 +151,30 @@ namespace BattleNotes.Apps
             ImGui.Dummy(dummySize);
             
             ImGui.Text("Recent rolls:");
+            for (int i = 0; i < history.Count; i++)
+            {
+                ImGui.PushID(i);
+                
+                ImGui.PopID();
+                ImGui.SameLine();
+            }
         }
 
+        private void rollPreset(int diceNum, int maxDiceRange, int modifier)
+        {
+            currentRoll.diceNum = diceNum;
+            currentRoll.maxDiceRange = maxDiceRange;
+            currentRoll.modifier = modifier;
+            
+            roll(diceNum, maxDiceRange, modifier);
+        }
+        
         private void roll(int diceNum, int maxDiceRange, int modifier)
         {
+            history.Add(currentRoll);
+            currentRoll.components.Clear();
+            currentRoll.result = 0;
+            
             for (int i = 0; i < diceNum; i++)
             {
                 int cmp = rnd.Next(1, maxDiceRange+1);

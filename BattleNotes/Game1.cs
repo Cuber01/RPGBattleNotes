@@ -50,7 +50,6 @@ namespace BattleNotes
             ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
 
             windows.Add(new DiceRoller());
-            windows.Add(new EnemyBoard());
         }
 
         protected override void LoadContent()
