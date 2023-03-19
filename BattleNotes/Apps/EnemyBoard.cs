@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
-using System.Security.Authentication.ExtendedProtection;
 using BattleNotes.GeneralTools;
 using BattleNotes.HandlingData;
 using BattleNotes.HandlingData.Json;
@@ -30,8 +29,8 @@ namespace BattleNotes.Apps
             public int maxShield;
         }
         
-        private List<Enemy> enemies = new List<Enemy>();
-        private List<Encounter> encounters = new List<Encounter>();
+        private readonly List<Enemy> enemies = new List<Enemy>();
+        private readonly List<Encounter> encounters = new List<Encounter>();
 
         private const ImGuiTableFlags tableFlags = ImGuiTableFlags.BordersV | ImGuiTableFlags.BordersH | ImGuiTableFlags.NoBordersInBody | 
                                                    ImGuiTableFlags.RowBg | ImGuiTableFlags.Reorderable;
@@ -39,7 +38,7 @@ namespace BattleNotes.Apps
         private const ImGuiInputTextFlags inputTextFlags = ImGuiInputTextFlags.EnterReturnsTrue;
 
         private const int colCount = 8;
-        private int currentEncounter = 0;
+        private int currentEncounter;
         
         private string scenarioName = "";
         private string lastSaveState = "";
@@ -126,10 +125,12 @@ namespace BattleNotes.Apps
                 });
             }
 
-            Encounter encounter = new Encounter();
-            encounter.name = name;
-            encounter.characters = characters;
-            
+            Encounter encounter = new Encounter
+            {
+                name = name,
+                characters = characters
+            };
+
             // Overwrite
             bool overwritten = false;
             for (int i = 0; i < encounters.Count; i++)

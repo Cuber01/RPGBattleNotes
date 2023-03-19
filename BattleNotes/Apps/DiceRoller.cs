@@ -1,11 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
-using BattleNotes.HandlingData;
-using BattleNotes.HandlingData.Json;
 using ImGuiNET;
-using Newtonsoft.Json;
 
 namespace BattleNotes.Apps
 {
@@ -24,11 +20,11 @@ namespace BattleNotes.Apps
             public int maxDiceRange;
             public int modifier;
 
-            public int result = 0;
+            public int result;
             public readonly List<int> components = new List<int>();
         }
 
-        private readonly RollData currentRoll = new RollData(1, 10, 0);
+        private RollData currentRoll = new RollData(1, 10, 0);
         private readonly List<RollData> history = new List<RollData>();
 
         private readonly Random rnd = new Random();
@@ -37,6 +33,8 @@ namespace BattleNotes.Apps
         
         private readonly Vector2 itemSpacingInMainUI = new Vector2(4, 2);
         private readonly Vector2 dummySize = new Vector2(0, 10);
+
+        private const int historyLength = 5;
 
         public override void imGuiUpdate()
         {
@@ -47,6 +45,7 @@ namespace BattleNotes.Apps
             showMainInterface();
             showResult();
             showPresets();
+            removeRedundantHistory(historyLength);
             showRecentRolls();
         
             ImGui.End();
@@ -79,7 +78,7 @@ namespace BattleNotes.Apps
                 ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 0);
                 if (ImGui.Button("[Roll]"))
                 {
-                    roll(currentRoll.diceNum, currentRoll.maxDiceRange, currentRoll.modifier);
+                    roll(currentRoll.diceNum, currentRoll.maxDiceRange, currentRoll.modifier, true);
                 }
             
             ImGui.PopStyleVar();
@@ -92,11 +91,11 @@ namespace BattleNotes.Apps
             ImGui.Dummy(dummySize);
             
             ImGui.Text("Presets:");
-            if (ImGui.Button("d20")) rollPreset(1, 20, 0);
+            if (ImGui.Button("d20")) rollPreset(1, 20, 0, true);
             ImGui.SameLine();
-            if (ImGui.Button("d10")) rollPreset(1, 10, 0);
+            if (ImGui.Button("d10")) rollPreset(1, 10, 0, true);
             ImGui.SameLine();
-            if (ImGui.Button("5d6")) rollPreset(5, 6, 0);
+            if (ImGui.Button("5d6")) rollPreset(5, 6, 0, true);
             
         }
 
@@ -120,6 +119,10 @@ namespace BattleNotes.Apps
                 if (r.modifier > 0)
                 {
                     diceText += (" + " + r.modifier);
+                }
+                else if (r.modifier < 0)
+                {
+                    diceText += (" - " + Math.Abs(r.modifier));
                 }
 
                 diceText += ":";
@@ -149,31 +152,54 @@ namespace BattleNotes.Apps
         private void showRecentRolls()
         {
             ImGui.Dummy(dummySize);
-            
             ImGui.Text("Recent rolls:");
-            for (int i = 0; i < history.Count; i++)
+            for (int i = history.Count-1; i >= 0; i--)
             {
                 ImGui.PushID(i);
+
+                RollData r = history[i];
+                string text = r.diceNum + "d" + r.maxDiceRange;
+
+                if (r.modifier > 0)
+                {
+                    text += "+" + r.modifier;
+                }
+                else if (r.modifier < 0)
+                {
+                    text += "-" + Math.Abs(r.modifier);
+                }
+
+                if (ImGui.Button(text))
+                {
+                    rollPreset(r.diceNum, r.maxDiceRange, r.modifier, false);
+                }
                 
                 ImGui.PopID();
                 ImGui.SameLine();
             }
         }
 
-        private void rollPreset(int diceNum, int maxDiceRange, int modifier)
+        private void removeRedundantHistory(int amountToSave)
+        {
+            if (history.Count > amountToSave)
+            {
+                history.RemoveAt(0);
+            }
+        }
+
+        private void rollPreset(int diceNum, int maxDiceRange, int modifier, bool save)
         {
             currentRoll.diceNum = diceNum;
             currentRoll.maxDiceRange = maxDiceRange;
             currentRoll.modifier = modifier;
             
-            roll(diceNum, maxDiceRange, modifier);
+            roll(diceNum, maxDiceRange, modifier, save);
         }
         
-        private void roll(int diceNum, int maxDiceRange, int modifier)
+        private void roll(int diceNum, int maxDiceRange, int modifier, bool save)
         {
-            history.Add(currentRoll);
-            currentRoll.components.Clear();
-            currentRoll.result = 0;
+            if(save) history.Add(currentRoll);
+            currentRoll = new RollData(diceNum, maxDiceRange, modifier);
             
             for (int i = 0; i < diceNum; i++)
             {
